@@ -300,11 +300,11 @@ Sirven para hacer cálculos sobre grupos de datos2
     le pasamos el id por url
     ```html
 <a class="a-oferta"  href="/gestion/seguimiento_solicitud?id_solicitud=<?php echo $id_solicitud;?>">[Solicitud]</a>
-````
+```
 la recogemos en la nueva pag
 ```php
 $id_soli = $_REQUEST['id_solicitud'];
   print_r($_REQUEST['id_solicitud']);
-````
+```
 
 seguir : http://www.it-docs.net/ddata/4829.pdf
