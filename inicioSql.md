@@ -307,6 +307,20 @@ Sirven para hacer cálculos sobre grupos de datos2
 $id_soli = $_REQUEST['id_solicitud'];
   print_r($_REQUEST['id_solicitud']);
 ```
+# DAR FORMATO A UNA FECHA
+```sql
+FUNCTION OBT_SOLICITUD_SEGUIMIENTO
+(v_id_solicitud IN SOLICITUD.id_solicitud%TYPE)
+ RETURN cursor_simple IS
+  
+  c_datos cursor_simple;
 
+BEGIN
+  OPEN c_datos FOR
+   select ID_SEGUIMIENTO, ASUNTO, DESCRIPCION, to_char(FECHA_INSERCION,'dd/mm/YYYY') FECHA_INSERCION , COD_GESTOR from solicitud_seguimientos
+   where id_solicitud = v_id_solicitud;
+   return c_datos;
+END;
+```
 
 seguir : http://www.it-docs.net/ddata/4829.pdf
