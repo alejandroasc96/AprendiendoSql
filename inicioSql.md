@@ -324,7 +324,8 @@ END;
 ```
 # DAR FORMATO OBJETO CLOB
 ```PHP
- utf8_encode($seguimiento_solicitud[$i]['DESCRIPCION']->load()) : null;
+ $descripcion = is_object($seguimiento_solicitud[$i]['DESCRIPCION']) ? utf8_encode($seguimiento_solicitud[$i]['DESCRIPCION']->load()) : null;
+ echo "<div class='dato'>".$descripcion."</div>";
  ```
 
 
