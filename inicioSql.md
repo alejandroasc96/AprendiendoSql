@@ -322,5 +322,10 @@ BEGIN
    return c_datos;
 END;
 ```
+# DAR FORMATO OBJETO CLOB
+```PHP
+ utf8_encode($seguimiento_solicitud[$i]['DESCRIPCION']->load()) : null;
+ ```
+
 
 seguir : http://www.it-docs.net/ddata/4829.pdf
