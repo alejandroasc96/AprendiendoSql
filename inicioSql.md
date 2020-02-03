@@ -294,6 +294,32 @@ Sirven para hacer cálculos sobre grupos de datos2
    ```sql
    SELECT COUNT(nombre) FROM Contactos;
    ```
+   Otro Ejemplo:
+   Vamos a obtener el numero de solicitudes que hay para una empresa, para ello le pasamos  cod_entidad y cod_unidad que nos referencia 
+   a la empresa.
+   *declaración de la función*
+   ```sql
+   FUNCTION OBT_NUMERO_SOLICITUD 
+    (v_cod_entidad ADEJE.SOLICITUD.COD_ENTIDAD%TYPE,
+    v_cod_unidad ADEJE.SOLICITUD.COD_UNIDAD%TYPE)
+    RETURN NUMBER;
+    ```
+    *Cuerpo de la función*
+    ```sql
+    FUNCTION OBT_NUMERO_SOLICITUD 
+    (v_cod_entidad ADEJE.SOLICITUD.COD_ENTIDAD%TYPE,
+    v_cod_unidad ADEJE.SOLICITUD.COD_UNIDAD%TYPE)
+    RETURN NUMBER IS
+    
+    num_solicitud NUMBER;
+    BEGIN
+        SELECT COUNT(ID_SOLICITUD)
+        INTO num_solicitud
+        FROM SOLICITUD
+        WHERE cod_entidad = v_cod_entidad AND cod_unidad = v_cod_unidad;
+        RETURN num_solicitud;
+    END;
+    ```
 
    La media de los precios de las ordenes:
 
