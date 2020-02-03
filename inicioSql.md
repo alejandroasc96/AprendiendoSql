@@ -367,6 +367,23 @@ END;
  $descripcion = is_object($seguimiento_solicitud[$i]['DESCRIPCION']) ? utf8_encode($seguimiento_solicitud[$i]['DESCRIPCION']->load()) : null;
  echo "<div class='dato'>".$descripcion."</div>";
  ```
-
+# CRUZAR TABLAS
+```sql
+FUNCTION OBT_NUM_SOLICITUD_SEGUI 
+    (v_cod_entidad ADEJE.SOLICITUD.COD_ENTIDAD%TYPE,
+     v_cod_unidad ADEJE.SOLICITUD.COD_UNIDAD%TYPE)
+    RETURN NUMBER IS
+    
+    num_solicitud NUMBER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO num_solicitud
+        FROM SOLICITUD_SEGUIMIENTOS a,SOLICITUD b
+        where a.id_solicitud=b.id_solicitud
+        and b.cod_entidad = v_cod_entidad AND b.cod_unidad = v_cod_unidad;
+        
+        RETURN num_solicitud;
+    END;
+```
 
 seguir : http://www.it-docs.net/ddata/4829.pdf
