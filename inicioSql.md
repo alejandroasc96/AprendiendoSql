@@ -455,6 +455,47 @@ Es posible cancelar la query en curso si dentro del trigger usamos una sentencia
 RAISE ( IGNORE | { {ROLLBACK | ABORT | FAIL} , <mensaje error>} );
 Aconsejo echar un vistazo al manual de cada base de datos para verificar el comportamiento
 de cada una de estas opciones.
+  
+  ## Otro Ejemplo Trigger
+  ```sql
+  create or replace TRIGGER "ADEJE"."TR_SOLICITUD_BI" 
+ BEFORE 
+ INSERT
+ ON ADEJE.SOLICITUD
+ REFERENCING OLD AS OLD NEW AS NEW
+ FOR EACH ROW 
+declare 
+ cont integer;
+begin
+  :NEW.FECHA_SOLICITUD:= to_date(SYSDATE);
+  :NEW.ID_UNICO:=ADEJE.PACK_GENERAL.generar_id_unico;
+  :NEW.NUM_IMAGEN:=trunc(dbms_random.value(1,3.9999999));
+  
+  IF (ADEJE.PACK_ENTIDADES.es_entidad_activa(:NEW.cod_entidad,:NEW.cod_unidad)='N') THEN
+    RAISE_APPLICATION_ERROR('-20001','Entidad No Activa. No se puede utiizar esta entidad.');
+  END IF;
+     
+  IF (INSERTING) THEN
+    :NEW.FECHA_INSERCION:=TO_DATE(CURRENT_DATE);
+    --:NEW.USUARIO_INSERCION:=PGI.PACK_CONEXION.decodificar_usuario;
+    
+    
+    --ESTO ES NUEVO
+    --Buscamos si la empresa esta insertada en empresas
+    select count(*) into cont
+    from ADEJE.empresas
+    where cod_entidad = :NEW.cod_entidad
+    and cod_unidad = :NEW.cod_unidad;
+    --Sino esta insertada la inserto
+    if (cont = 0) then
+        insert into ADEJE.empresas (cod_entidad, cod_unidad)
+        values (:NEW.cod_entidad, :NEW.cod_unidad);
+    end if; 
+    --FIN NUEVO
+  END IF;
+  
+end;
+```
 
 
 
