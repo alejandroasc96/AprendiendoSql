@@ -401,6 +401,59 @@ Sirven para hacer cálculos sobre grupos de datos2
     “SQL error: constraint failed” en el caso de intentar meter un texto más grande del debido o
     como este “SQL error: column ID_RSU is not unique” en el caso de querer meter una
     columna con valores duplicados.
+    
+ # Triggers
+Un trigger (“gatillo”) consiste en ejecutar una secuencia de sentencias cuando ocurre un
+evento dado.
+La idea de esto es dar de alta un trigger para que se ejecute cuando ocurra un evento que
+indiquemos nosotros y de esta forma se realicen operaciones en la base de datos de forma
+automática.
+Se pueden ejecutar cuando se produzcan un DELETE un INSERT o un UPDATE de una tabla
+concreta o bien cuando se produzca un UPDATE de una o más columnas de una tabla.
+Tenemos también la posibilidad de ejecutar el trigger cada vez que se actualiza,inserta o borra
+una fila mediante una sentencia que implique lanzar el trigger.
+Otra opción de “configuración del trigger” que tenemos disponible es la de indicar si
+queremos que el trigger se produzca antes o después de la acción que estamos indicando.
+Cuando se ejecute el trigger puede que en ese momento queramos hacer referencia a los
+nuevos datos o a los antiguos (los que van a ser reemplazados, eliminados o los que se van a
+insertar nuevos), para ello podremos usar referencias del tipo “NEW.nombre_columna” o
+“OLD.nombre_columna”.
+Los casos que tenemos son:
+• Cuando hacemos una INSERT las referencias NEW son válidas
+• Cuando hacemos un UPDATE las referencias NEW y OLD son válidas
+• Cuando hacemos un DELETE las referencias OLD son válidas.
+Supongamos que creamos una tabla para almacenar las ordenes de compras sospechosas de
+ser erróneas porque tienen un precio muy caro:
+```sql
+CREATE TABLE Sospechosas (o_id INTEGER NOT NULL PRIMARY KEY,
+ FOREIGN KEY (o_id) REFERENCES Ordenes(o_id) );
+ ```
+Ahora crearemos un trigger para que en cada inserción se compruebe si el precio es de más
+de 1000 euros y en ese caso metemos la orden en la lista de sospechosas:
+```sql
+CREATE TRIGGER check_sospechosas AFTER INSERT ON Ordenes WHEN (NEW.preci
+o >= 1000)
+BEGIN
+INSERT INTO "Sospechosas" VALUES(NEW.o_id);
+END;
+````
+De esta forma al insertar una orden de más de 1000 euros:
+INSERT INTO "Ordenes" VALUES(4,"OR-4",1,1200);
+Veremos que se ha creado una entrada en la tabla “Sospechosas” para esta orden de compra.
+Para eliminar un trigger se puede utilizar la sentencia DROP TRIGGER <nombre trigger> o
+bien se borrará junto con la tabla cuando esta se elimine.
+La sintaxis para un trigger es:
+  ```sql
+CREATE [TEMP | TEMPORARY] TRIGGER [ IF NOT EXISTS ] [ <nombre de la base de datos>. ]
+<nombre del trigger> [ BEFORE | AFTER | INSTEAD OF ] { DELETE | INSERT | UPDATE [OF
+<nombre_columna>,...una o más]} ON <nombre tabla> [ FOR EACH ROW ] [ WHEN
+<expresión> ] BEGIN <sentencias finalizadas con;>END;
+```
+Es posible cancelar la query en curso si dentro del trigger usamos una sentencia RAISE.
+RAISE ( IGNORE | { {ROLLBACK | ABORT | FAIL} , <mensaje error>} );
+Aconsejo echar un vistazo al manual de cada base de datos para verificar el comportamiento
+de cada una de estas opciones.
+
 
 
    
