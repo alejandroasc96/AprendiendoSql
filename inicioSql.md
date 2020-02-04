@@ -334,6 +334,42 @@ Sirven para hacer cálculos sobre grupos de datos2
    ```sql
    SELECT upper(nombre) FROM Contactos;
    ```
+   ## GROUP BY
+    La sentencia GROUP BY sirve para agrupar resultados en conjuntos y de esta forma aplicar
+    operaciones sobre esos conjuntos. Se usan en conjunción con las funciones agregadas.
+    Antes, vamos a añadir una columna a la tabla de órdenes, se trata del precio de cada orden:
+    ```sql
+    ALTER TABLE Ordenes ADD precio REAL;
+    ```
+    Y ahora añadimos un precio:
+    ```sql
+    UPDATE ordenes SET precio=12 WHERE o_id=1;
+    ```
+    Vamos a añadir algunas ordenes mas para hacer pruebas con el group by:
+    ```sql
+    INSERT INTO Ordenes (orden,c_id,precio) VALUES ("OR-2",1,25);
+    INSERT INTO Ordenes (orden,c_id,precio) VALUES ("OR-3",2,13.6);
+    ```
+    A continuación vamos a obtener todas las ordenes de compra y vamos a agruparlas por
+    nombre para además sumar los precios que corresponden a cada nombre:
+    ```sql
+    SELECT nombre,apellidos,SUM(Ordenes.precio) FROM Contactos INNER JOIN Or
+    denes ON Contactos.c_id = Ordenes.c_id GROUP BY nombre;
+    ```
+    Esto podemos hacerlo porque se ha realizado una agrupación por nombre. Si no hacemos la
+    agrupación el resultado es totalmente distinto ya que suma todos los precios de la columna
+    precios que sale tras la selección.
+    
+    ## HAVING
+    El having tiene su sentido porque no es posible usar funciones agregadas en el WHERE.
+    Por ejemplo:
+    Vamos a seleccionar de la tabla Contactos todos aquellos que tengan el mismo nombre, los
+    agrupamos y sumamos su edad:
+    ```sql
+    SELECT nombre,SUM(edad) FROM Contactos GROUP BY nombre HAVING COUNT(edad) > 1;
+    ```
+
+
    
    # Ejemplo pasando id por url para la búsqueda
     ## vista
