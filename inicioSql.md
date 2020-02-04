@@ -436,19 +436,21 @@ o >= 1000)
 BEGIN
 INSERT INTO "Sospechosas" VALUES(NEW.o_id);
 END;
-````
+```
 De esta forma al insertar una orden de más de 1000 euros:
+```sql
 INSERT INTO "Ordenes" VALUES(4,"OR-4",1,1200);
+```
 Veremos que se ha creado una entrada en la tabla “Sospechosas” para esta orden de compra.
-Para eliminar un trigger se puede utilizar la sentencia DROP TRIGGER <nombre trigger> o
+Para eliminar un trigger se puede utilizar la sentencia **DROP TRIGGER nombre trigger** o
 bien se borrará junto con la tabla cuando esta se elimine.
 La sintaxis para un trigger es:
-  ```sql
+```sql
 CREATE [TEMP | TEMPORARY] TRIGGER [ IF NOT EXISTS ] [ <nombre de la base de datos>. ]
 <nombre del trigger> [ BEFORE | AFTER | INSTEAD OF ] { DELETE | INSERT | UPDATE [OF
 <nombre_columna>,...una o más]} ON <nombre tabla> [ FOR EACH ROW ] [ WHEN
 <expresión> ] BEGIN <sentencias finalizadas con;>END;
-```
+  ```
 Es posible cancelar la query en curso si dentro del trigger usamos una sentencia RAISE.
 RAISE ( IGNORE | { {ROLLBACK | ABORT | FAIL} , <mensaje error>} );
 Aconsejo echar un vistazo al manual de cada base de datos para verificar el comportamiento
