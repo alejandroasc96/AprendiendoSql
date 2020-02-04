@@ -368,6 +368,39 @@ Sirven para hacer cálculos sobre grupos de datos2
     ```sql
     SELECT nombre,SUM(edad) FROM Contactos GROUP BY nombre HAVING COUNT(edad) > 1;
     ```
+    ## Constraints - Restricciones
+    Se llama así al restringir los valores que puede tomar una determinada columna de la tabla.
+Estas restricciones las podemos añadir al crear una tabla con CREATE_TABLE o bién al
+modificarla mediante ALTER_TABLE.
+Restricciones típicas pueden ser por ejemplo que una columna no pueda ser NULL, que no
+tome un valor determinado o que no tenga una longitud mayor que una dada.
+Entre estas restricciones típicas tenemos:
+* NOT NULL (Para que no se permita un valor NULL)
+* PRIMARY KEY ( ¿alguien no sabe a estas alturas para que sirve esto?)
+* UNIQUE (Para obligar a que no se repitan valores en esa columna)
+* CHECK ( Para verificar una condición dada)
+```sql
+CREATE TABLE RSU (ID_RSU TEXT UNIQUE PRIMARY KEY,
+Descr TEXT,
+RSU_type TEXT,
+ComsParams TEXT,
+Road TEXT,
+PK INTEGER,
+Dir TEXT check (length(Dir) <= 2),
+POS_X REAL,
+POS_Y REAL,
+POS_Z REAL,
+RT_Timestamp TEXT,
+RT_Status TEXT,
+Algorithms_path TEXT check(length(Algorithms_path) <= 260));
+```
+Tenemos en esta tabla cuatro restricciones, una PRIMARY_KEY y UNIQUE y dos CHECKs.
+Como se puede ver el mecanismo es sencillo, se le indica que esos campos no pueden tener
+más de una longitud dada y ya esta.
+Al intentar introducir datos que no cumplen las condiciones se produce un error como este
+“SQL error: constraint failed” en el caso de intentar meter un texto más grande del debido o
+como este “SQL error: column ID_RSU is not unique” en el caso de querer meter una
+columna con valores duplicados.
 
 
    
