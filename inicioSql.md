@@ -15,6 +15,50 @@ CREATE TABLE Contactos (Nombre TEXT,Apellidos TEXT,Edad INTEGER);
 
 Esta sentencia nos crea una tabla con tres columnas. Nombre,Apellidos y Edad donde iremos
 metiendo datos.
+## ALTER TABLE - AGREGAR columna
+```sql
+ALTER TABLE table_name
+ADD column_name datatype;
+-- Queremos añadir una columna denominada "DateOfBirth" en la tabla "Personas".
+ALTER TABLE Persons
+ADD DateOfBirth date;
+```
+## DROP COLUM
+```sql
+ALTER TABLE table_name
+DROP COLUMN column_name;
+
+-- Se desea eliminar la columna denominada "DateOfBirth" en la tabla "Personas".
+ALTER TABLE Persons
+DROP COLUMN DateOfBirth;
+```
+## ALTER TABLE - ALTER / MODIFICAR COLUMNA
+**SQL Server / MS Access**:
+```sql
+ALTER TABLE table_name
+ALTER COLUMN column_name datatype;
+
+-- Queremos cambiar el tipo de datos de la columna denominada "DateOfBirth" en la tabla "Personas".
+ALTER TABLE Persons
+ALTER COLUMN DateOfBirth year;
+-- Tenga en cuenta que la columna "DateOfBirth" es ahora del tipo año y su formato será dos o cuatro dígitos.
+```
+**My SQL / Oracle (versión anterior 10G)**:
+```sql
+ALTER TABLE table_name
+MODIFY COLUMN column_name datatype;
+```
+**Oracle 10G y posterior**:
+```sql
+ALTER TABLE table_name
+MODIFY column_name datatype;
+```
+# DML Lenguaje de Manipulación de Datos (Data Manipulation Language)
+ Nos permiten manipular(consultar,ordenar,filtrar,etc) los datos existentes en una base de datos.
+* SELECT Consulta filas en la base de datos
+* UPDATE Modifica valores de una fila
+* INSERT Inserta una nueva fila
+* DELETE Elimina filas
 
 ## Insertando datos en una tabla (INSERT)
 
@@ -63,15 +107,61 @@ DROP TABLE IF EXISTS USUARIOS;
 ## Consultas con predicado
 
 Se llama **predicado** a lo que va **entre** el **SELECT** y el primer **nombre** de **columna** que vamos a
-recuperar. **Sirven para modificar** el **comportamiento** de las **consultas**.
+recuperar. **Sirven para modificar** el **comportamiento** de las **consultas**. Los posibles predicados son:
+
+* **ALL**:  Devuelve todos los campos de la tabla.
+* **TOP**:Devuelve un determinado número de registros de la tabla. En SQLite se soporta como *LIMIT*.
+* **DISTINCT**: Omite los registros cuyos campos seleccionados coincidan totalmente.
+* **DISTINCTROW**: Omite los registros duplicados basándose en la totalidad del registro y no sólo en los campos seleccionados.
+
+### ALL (se puede usar * en su reemplazo):
+Si no se incluye ninguno de los predicados se asume ALL. El Motor de base de datos selecciona todos los registros que cumplen las condiciones de la instrucción SQL. No se conveniente abusar de este predicado ya que obligamos al motor de la base de datos a analizar la estructura de la tabla para averiguar los campos que contiene, es mucho más rápido indicar el listado de campos deseados.
+
+```sql
+SELECT ALL FROM Empleados;
+
+SELECT * FROM Empleados;
+```
+
+### TOP
+Devuelve un cierto número de registros que entran entre al principio o al final de un rango especificado por una cláusula ORDER BY. Supongamos que queremos recuperar los nombres de los 25 primeros estudiantes del curso 1994:
+```sql
+SELECT TOP 25 Nombre, Apellido FROM Estudiantes
+
+ORDER BY Nota DESC;
+```
+
+Si no se incluye la cláusula ORDER BY, la consulta devolverá un conjunto arbitrario de 25 registros de la tabla Estudiantes .El predicado TOP no elige entre valores iguales. En el ejemplo anterior, si la nota media número 25 y la 26 son iguales, la consulta devolverá 26 registros. Se puede utilizar la palabra reservada PERCENT para devolver un cierto porcentaje de registros que caen al principio o al final de un rango especificado por la cláusula ORDER BY. Supongamos que en lugar de los 25 primeros estudiantes deseamos el 10 por ciento del curso:
+
+```sql
+SELECT TOP 10 PERCENT Nombre, Apellido FROM Estudiantes ORDER BY Nota DESC;
+```
+
+El valor que va a continuación de TOP debe ser un Integer sin signo.TOP no afecta a la posible actualización de la consulta.
+
+#### Caso TOP SQlite
+Ejemplo:
+```sql
+ SELECT * FROM Contactos LIMIT 2;
+```
+
+### DISTINCT
+
+Omite los registros que contienen datos duplicados en los campos seleccionados. Para que los valores de cada campo listado en la instrucción *SELECT* se incluyan en la consulta deben ser únicos.
+
+Por ejemplo, varios empleados listados en la tabla Empleados pueden tener el mismo apellido. Si dos registros contienen López en el campo Apellido, la siguiente instrucción SQL devuelve un único registro:
+```sql
+SELECT DISTINCT Apellido FROM Empleados;
+```
+
+Con otras palabras el predicado *DISTINCT* devuelve aquellos registros cuyos campos indicados en la cláusula SELECT posean un contenido diferente. El resultado de una consulta que utiliza DISTINCT no es actualizable y no refleja los cambios subsiguientes realizados por otros usuarios.
 Ejemplo:
 
 ```sql
 SELECT DISTINCT Nombre FROM Contactos;
 ```
 
-> Nos devolverá todos los nombre de la tabla contactos pero omitirá las filas cuyos campos
-> seleccionados coincidan totalmente.
+> Nos devolverá todos los nombre de la tabla contactos pero omitirá las filas cuyos campos seleccionados coincidan totalmente.
 
 ```sql
 SELECT DISTINCT Nombre,Edad FROM Contactos;
@@ -79,19 +169,18 @@ SELECT DISTINCT Nombre,Edad FROM Contactos;
 
 > En este otro caso solo nos omitirá las filas en las que coincidan los dos campos.
 
-### Predicados comunes son:
-
-- **DISTINCT** Omitirá las filas cuyos campos seleccionados coincidan totalmente
-- **ALL** Devuelve todos los campos de la tabla
-- **TOP** Devuelve un determinado número de registros de la tabla. En SQLite se soporta
-  como LIMIT.
 
 ```sql
  SELECT * FROM Contactos LIMIT 2;
 ```
 
-- **DISTINCTROW** Omite las filas duplicadas basándose en la totalidad del registro y no
-  solo en los campos seleccionados. Esto no lo soporta SQLite.
+### DISTINCTROW
+ Omite las filas duplicadas basándose en la totalidad del registro y no solo en los campos seleccionados. Esto no lo soporta SQLite. Si la tabla empleados contiene dos registros: Antonio López y Marta López el ejemplo del predicado DISTINCT devuleve un único registro con el valor López en el campo Apellido ya que busca no duplicados en dicho campo. Este último ejemplo  devuelve dos registros con el valor López en el apellido ya que se buscan no duplicados en el registro completo.
+
+```sql
+SELECT DISTINCTROW Apellido FROM Empleados;
+```
+
 
 ## Cláusulas
 
@@ -551,4 +640,3 @@ FUNCTION OBT_NUM_SOLICITUD_SEGUI
     END;
 ```
 
-seguir : http://www.it-docs.net/ddata/4829.pdf
