@@ -139,6 +139,28 @@ SELECT TOP 10 PERCENT Nombre, Apellido FROM Estudiantes ORDER BY Nota DESC;
 
 El valor que va a continuación de TOP debe ser un Integer sin signo.TOP no afecta a la posible actualización de la consulta.
 
+### CASO ORACLE A LA ESPERA DE ALGO MEJOR
+```sql
+FUNCTION OBT_DATOS_ULTIMA_INSERCION 
+    (v_cod_entidad ADEJE.SOLICITUD.COD_ENTIDAD%TYPE,
+     v_cod_unidad ADEJE.SOLICITUD.COD_UNIDAD%TYPE)
+    return cursor_simple IS
+    
+        c_datos cursor_simple;
+        
+        BEGIN
+          OPEN c_datos FOR
+           select to_char(y.FECHA_INSERCION,'dd/mm/YYYY') FECHA_INSERCION, y.ASUNTO,y.COD_GESTOR
+           from ADEJE.SOLICITUD_SEGUIMIENTOS y , ADEJE.SOLICITUD z
+            where y.id_solicitud=z.id_solicitud
+            and z.cod_entidad = 2365 AND z.cod_unidad = 0
+            -- Aquí empieza a seleccionar el último seguimiento --
+            and y.id_seguimiento = (select max(id_seguimiento) from ADEJE.solicitud_seguimientoS
+            where id_solicitud = y.id_solicitud); 
+           return c_datos;
+        END;
+```
+
 #### Caso TOP SQlite
 Ejemplo:
 ```sql
